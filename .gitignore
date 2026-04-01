@@ -1,16 +1,18 @@
-# Visual Studio 临时文件
+# --- Visual Studio 临时文件 ---
 .vs/
 [Bb]in/
 [Ob]j/
-*.user
 *.suo
-*.cache
-*.lref
-
-# 用户特定的配置文件
+*.user
 *.userosscache
 *.sln.docstates
 
-# 其他
-*.tmp
-*.log
+# --- 编译产物 ---
+*.exe
+*.dll
+*.pdb
+*.cache
+
+# --- 忽略 Libs 之外的临时文件 ---
+# 注意：05_Depends/Libs 里的 dll 建议保留，不要被上面的 *.dll 误杀了
+!05_Depends/Libs/*.dll
