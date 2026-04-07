@@ -5,8 +5,55 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MVS_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="视觉软件" Height="1040" Width="1920"
+        Background="#1E1E1E"
+        WindowStyle="None"
+        StateChanged="Window_StateChanged">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" 
+                      ResizeBorderThickness="5" 
+                      GlassFrameThickness="0" 
+                      CornerRadius="0"/>
+    </WindowChrome.WindowChrome>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#2D2D30">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" 
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button Content="文件" Foreground="White" Background="Transparent" BorderThickness="0" Margin="15,0" FontSize="16"/>
+                <Button Content="视图" Foreground="White" Background="Transparent" BorderThickness="0" Margin="15,0" FontSize="16"/>
+                <Button Content="设置" Foreground="White" Background="Transparent" BorderThickness="0" Margin="15,0" FontSize="16"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button Content="—" Width="40" Background="Transparent" Foreground="White" BorderThickness="0" Click="BtnMinimize_Click"/>
+                <Button x:Name="BtnMaximize" Content="☐" ToolTip="最大化" Width="40" Background="Transparent" Foreground="White" BorderThickness="0" Click="BtnMaximize_Click"/>
+                <Button Content="✕" Width="40" Background="Transparent" Foreground="White" BorderThickness="0" Click="BtnClose_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#252526" BorderBrush="#3F3F46" BorderThickness="0,0,1,0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="设备列表" Foreground="LightGray" Margin="15,10" FontSize="16" FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Column="1" Background="#1E1E1E">
+                <TextBlock Text="主画面显示区域" Foreground="Gray" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

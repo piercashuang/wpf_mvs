@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using MVS.Contract;
+using MVS.Contract.Camera;
 
 namespace MVS.Infrastructure
 {

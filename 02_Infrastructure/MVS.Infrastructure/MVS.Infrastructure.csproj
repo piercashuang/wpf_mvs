@@ -45,5 +45,11 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\01_Contract\MVS.Contract\MVS.Contract.csproj">
+      <Project>{addbb5fe-f0d1-4b4f-8038-2504168329da}</Project>
+      <Name>MVS.Contract</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
