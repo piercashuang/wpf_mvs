@@ -24,4 +24,17 @@ namespace MVS.Contract.Camera
         /// <returns>相机实例</returns>
         ICamera CreateCamera(CameraMetaInfo info);
     }
+
+    public interface ICameraFactory
+    {
+        /// <summary>
+        /// 扫描当前环境下的相机列表
+        /// </summary>
+        List<CameraMetaInfo> ScanCameras();
+
+        /// <summary>
+        /// 根据元信息创建具体的相机控制实例
+        /// </summary>
+        ICamera CreateCamera(CameraMetaInfo metaInfo);
+    }
 }
