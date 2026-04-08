@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("MVS.Plugins.HikCamera")]
+[assembly: AssemblyTitle("MVS.Camera.Hik")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MVS.Plugins.HikCamera")]
+[assembly: AssemblyProduct("MVS.Camera.Hik")]
 [assembly: AssemblyCopyright("Copyright ©  2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("f952d246-4a94-4653-8dbc-df0f59195261")]
+[assembly: Guid("224a70ed-f3ab-4d2a-98ca-2bc08155b007")]
 
 // 程序集的版本信息由下列四个值组成: 
 //
