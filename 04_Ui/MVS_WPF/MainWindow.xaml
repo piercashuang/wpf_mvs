@@ -53,6 +53,7 @@
             <Grid Grid.Column="1" Background="#1E1E1E">
                 <TextBlock Text="主画面显示区域" Foreground="Gray" 
                            HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
+                <Image x:Name="CameraDisplay" Stretch="Uniform"  Margin="10"/>
             </Grid>
         </Grid>
     </Grid>

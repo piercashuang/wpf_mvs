@@ -9,7 +9,11 @@
         public string UserDefinedName { get; set; }  // 用户定义名称
         public string VendorName { get; set; }       // 厂商名称 (Hik, Dalsa等)
         public string IpAddress { get; set; }        // IP地址 (网口相机)
+
+        public string ModelName { get; set; }        // 设备型号
         public object RawInfo { get; set; }          // 预留：存放 SDK 原生的驱动信息对象
+
+        
 
         // 重写 Equals 方便去重
         public override bool Equals(object obj)

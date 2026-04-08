@@ -18,3 +18,5 @@ D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Contract.dll
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Infrastructure.pdb
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Contract.pdb
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\MVS_WPF.csproj.CopyComplete
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MvCameraControl.Net.dll
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MvCameraControl.Net.xml
