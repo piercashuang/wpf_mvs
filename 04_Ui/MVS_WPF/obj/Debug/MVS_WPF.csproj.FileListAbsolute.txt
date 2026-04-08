@@ -13,3 +13,8 @@ D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\MVS_WPF.csproj.GenerateResource.
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\MVS_WPF.csproj.CoreCompileInputs.cache
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\MVS_WPF.exe
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\MVS_WPF.pdb
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Infrastructure.dll
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Contract.dll
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Infrastructure.pdb
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\MVS.Contract.pdb
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\MVS_WPF.csproj.CopyComplete

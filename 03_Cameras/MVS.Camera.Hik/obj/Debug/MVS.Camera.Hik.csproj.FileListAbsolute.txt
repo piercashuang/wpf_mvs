@@ -1,0 +1,9 @@
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\bin\Debug\MVS.Camera.Hik.dll
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\bin\Debug\MVS.Camera.Hik.pdb
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\bin\Debug\MvCameraControl.Net.dll
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\bin\Debug\MvCameraControl.Net.xml
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\obj\Debug\MVS.Camera.Hik.csproj.AssemblyReference.cache
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\obj\Debug\MVS.Camera.Hik.csproj.CoreCompileInputs.cache
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\obj\Debug\MVS.Camera.Hik.csproj.CopyComplete
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\obj\Debug\MVS.Camera.Hik.dll
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Hik\obj\Debug\MVS.Camera.Hik.pdb

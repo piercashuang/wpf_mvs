@@ -1,0 +1,6 @@
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Dalsa\bin\Debug\MVS.Camera.Dalsa.dll
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Dalsa\bin\Debug\MVS.Camera.Dalsa.pdb
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Dalsa\obj\Debug\MVS.Camera.Dalsa.csproj.AssemblyReference.cache
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Dalsa\obj\Debug\MVS.Camera.Dalsa.csproj.CoreCompileInputs.cache
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Dalsa\obj\Debug\MVS.Camera.Dalsa.dll
+D:\Repositories\MVS_WPF\03_Cameras\MVS.Camera.Dalsa\obj\Debug\MVS.Camera.Dalsa.pdb

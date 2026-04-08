@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MVS.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,8 +24,35 @@ namespace MVS_WPF
         public MainWindow()
         {
             InitializeComponent();
+
+            // 【新增】在 UI 初始化完成后，立刻去扫描并加载相机插件
+            MVS.Infrastructure.CameraManager.Instance.ScanAllCameras();
+            LoadCameraPlugins();
         }
 
+
+        /// <summary>
+        /// 【新增】调用底层 CameraManager 扫描根目录的相机 DLL
+        /// </summary>
+        private void LoadCameraPlugins()
+        {
+            try
+            {
+                // 获取当前 MVS_WPF.exe 所在的运行目录 (即 bin\Debug\)
+                string pluginPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                // 触发底层工厂扫描
+                MVS.Infrastructure.CameraManager.Instance.InitializePlugins(pluginPath);
+
+                // 测试：获取已加载的相机，在输出窗口打印一下看看是否成功
+              //  var loadedCameras = CameraManager.Instance.GetAllCameras();
+              //  System.Diagnostics.Debug.WriteLine($"[系统提示] 成功加载了 {loadedCameras.Count()} 个相机实例！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"加载相机插件失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private void TopBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
