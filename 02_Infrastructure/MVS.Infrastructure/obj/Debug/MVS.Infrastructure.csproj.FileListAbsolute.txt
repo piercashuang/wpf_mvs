@@ -1,0 +1,11 @@
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\bin\Debug\MVS.Infrastructure.dll
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\bin\Debug\MVS.Infrastructure.pdb
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\bin\Debug\MVS.Contract.dll
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\bin\Debug\MVS.Contract.pdb
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\obj\Debug\MVS.Infrastructure.csproj.AssemblyReference.cache
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\obj\Debug\MVS.Infrastructure.csproj.CoreCompileInputs.cache
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\obj\Debug\MVS.Infrastructure.csproj.CopyComplete
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\obj\Debug\MVS.Infrastructure.dll
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\obj\Debug\MVS.Infrastructure.pdb
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\bin\Debug\MvCameraControl.Net.dll
+D:\Repositories\MVS_WPF\02_Infrastructure\MVS.Infrastructure\bin\Debug\MvCameraControl.Net.xml

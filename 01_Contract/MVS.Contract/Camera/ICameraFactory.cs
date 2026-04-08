@@ -12,10 +12,9 @@ namespace MVS.Contract.Camera
         string Version { get; }
 
         /// <summary>
-        /// 枚举当前环境下该插件能找到的所有相机
+        /// 扫描当前环境下的相机列表
         /// </summary>
-        /// <returns>返回相机元信息列表</returns>
-        List<CameraMetaInfo> EnumCameras();
+        List<CameraMetaInfo> ScanCameras();
 
         /// <summary>
         /// 根据选定的元信息，创建一个实现了 ICamera 的对象
@@ -24,4 +23,5 @@ namespace MVS.Contract.Camera
         /// <returns>相机实例</returns>
         ICamera CreateCamera(CameraMetaInfo info);
     }
+
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MVS.Plugins.HikCamera
+namespace MVS.Camera.Dalsa
 {
     public class Class1
     {

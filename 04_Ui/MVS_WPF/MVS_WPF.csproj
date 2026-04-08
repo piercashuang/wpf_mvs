@@ -103,5 +103,15 @@
   <ItemGroup>
     <Resource Include="logo.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\01_Contract\MVS.Contract\MVS.Contract.csproj">
+      <Project>{addbb5fe-f0d1-4b4f-8038-2504168329da}</Project>
+      <Name>MVS.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\02_Infrastructure\MVS.Infrastructure\MVS.Infrastructure.csproj">
+      <Project>{aaea9ae9-b698-4a51-bdeb-0ee581f4d6a5}</Project>
+      <Name>MVS.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
