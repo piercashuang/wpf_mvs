@@ -113,6 +113,10 @@
       <Project>{aaea9ae9-b698-4a51-bdeb-0ee581f4d6a5}</Project>
       <Name>MVS.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\03_Cameras\MVS.Camera.Hik\MVS.Camera.Hik.csproj">
+      <Project>{224a70ed-f3ab-4d2a-98ca-2bc08155b007}</Project>
+      <Name>MVS.Camera.Hik</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

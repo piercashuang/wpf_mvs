@@ -88,7 +88,7 @@ namespace MVS.Infrastructure
                     // 【核心分配逻辑】：扫描到了相机，我们需要决定把它分发给哪个工厂去实例化
                     // 这里通过比较 VendorName 和 插件的 Name 来匹配 (例如：如果扫到 "Hikvision"，就找 Name 包含 "Hik" 的工厂)
                     var matchedFactory = _factories.FirstOrDefault(f =>
-                        metaInfo.VendorName.IndexOf("Hik", StringComparison.OrdinalIgnoreCase) >= 0 && f.Name.Contains("Hikvision") ||
+                        metaInfo.VendorName.IndexOf("GEV", StringComparison.OrdinalIgnoreCase) >= 0  ||
                         metaInfo.VendorName.IndexOf("Dalsa", StringComparison.OrdinalIgnoreCase) >= 0 && f.Name.Contains("Dalsa")
                     // 如果都没有匹配上，默认给第一个加载的工厂（或者给专门的通用 GigE 工厂）
                     ) ?? _factories.FirstOrDefault();

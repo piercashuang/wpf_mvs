@@ -12,9 +12,8 @@ namespace MVS.Camera.Hik
 
         public ICamera CreateCamera(CameraMetaInfo info)
         {
-            // 直接根据传入的元信息，实例化控制类
-            // return new HikCamera(info.SerialNumber);
-            throw new NotImplementedException("这里写具体的 new HikCamera 逻辑");
+            // 确保这里是 return new 对象，而不是 throw 报错
+            return new HikCamera(info.SerialNumber);
         }
     }
 }
