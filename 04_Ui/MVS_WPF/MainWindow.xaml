@@ -8,7 +8,8 @@
         Title="视觉软件" Height="1040" Width="1920"
         Background="#1E1E1E"
         WindowStyle="None"
-        StateChanged="Window_StateChanged">
+        StateChanged="Window_StateChanged"
+        Closed="Window_Closed">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" 
                       ResizeBorderThickness="5" 
