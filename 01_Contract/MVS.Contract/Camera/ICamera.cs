@@ -1,39 +1,39 @@
 ﻿using System;
-using System.Drawing; // 必须引用 System.Drawing
+using System.Drawing;
+using MVS.Contract; // 确保引入了包含 MvsStatus 的命名空间
 
 namespace MVS.Contract.Camera
 {
     public interface ICamera
     {
-        /// <summary>
-        /// 相机品牌
-        /// </summary>
         string Brand { get; }
 
-        /// <summary>
-        /// 打开相机 (无需再传 SN，由具体类的构造函数负责接收)
-        /// </summary>
-        bool Open();
-
-        /// <summary>
-        /// 关闭相机并释放资源
-        /// </summary>
+        // --- 核心操作接口：现在返回 MvsStatus ---
+        MvsStatus Open();
         void Close();
+        MvsStatus StartGrabbing();
+        MvsStatus StopGrabbing();
 
-        /// <summary>
-        /// 开始取流 (返回 bool 以便外层判断是否成功)
-        /// </summary>
-        bool StartGrabbing();
-
-        /// <summary>
-        /// 停止取流
-        /// </summary>
-        bool StopGrabbing();
-
-        /// <summary>
-        /// 【核心事件】：图像抓取完成后的回调事件
-        /// 第一个参数是发送者(相机本身)，第二个参数是转换好的 Bitmap 图像
-        /// </summary>
         event EventHandler<Bitmap> ImageGrabbed;
+
+        // --- 参数读写接口：现在返回 MvsStatus ---
+
+        MvsStatus SetFloatValue(string key, float value);
+        MvsStatus GetFloatValue(string key, out float value);
+
+        MvsStatus SetIntValue(string key, long value);
+        MvsStatus GetIntValue(string key, out long value);
+
+        MvsStatus SetBoolValue(string key, bool value);
+        MvsStatus GetBoolValue(string key, out bool value);
+
+        // 枚举类型：支持 ID 设置和 字符串设置
+        MvsStatus SetEnumValue(string key, uint value);
+        MvsStatus GetEnumValue(string key, out uint value);
+
+        MvsStatus SetEnumValueByString(string key, string value); // 修正：设置时不需要 out
+
+        // 在 ICamera.cs 中添加
+        MvsStatus GetEnumSymbolic(string key, out string symbolic);
     }
 }

@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Threading;
 using MvCameraControl;
 using MVS.Contract.Camera;
+using MVS.Contract;
 
 namespace MVS.Camera.Hik
 {
@@ -21,22 +22,22 @@ namespace MVS.Camera.Hik
         // 对外暴露的图像事件
         public event EventHandler<Bitmap> ImageGrabbed;
 
-        // 构造函数：记住自己的序列号
+        // 构造函数
         public HikCamera(string serialNumber)
         {
             _serialNumber = serialNumber;
         }
 
-        public bool Open()
+        public MvsStatus Open()
         {
-            if (_device != null) return true; // 已经打开了
+            if (_device != null) return MvsStatus.Ok;
 
-            // 1. 根据序列号，在底层重新找回这个特定的设备信息
+            // 1. 枚举设备找目标
             DeviceTLayerType enumTLayerType = DeviceTLayerType.MvGigEDevice | DeviceTLayerType.MvUsbDevice;
             List<IDeviceInfo> deviceInfoList = new List<IDeviceInfo>();
             int nRet = DeviceEnumerator.EnumDevices(enumTLayerType, out deviceInfoList);
 
-            if (nRet != MvError.MV_OK) return false;
+            if (nRet != MvError.MV_OK) return MvsStatus.NoCameraError;
 
             IDeviceInfo targetInfo = null;
             foreach (var info in deviceInfoList)
@@ -48,9 +49,9 @@ namespace MVS.Camera.Hik
                 }
             }
 
-            if (targetInfo == null) return false; // 没找到该序列号的相机
+            if (targetInfo == null) return MvsStatus.NoCameraError;
 
-            // 2. 创建并打开设备
+            // 2. 创建并打开
             try
             {
                 _device = DeviceFactory.CreateDevice(targetInfo);
@@ -60,118 +61,204 @@ namespace MVS.Camera.Hik
                 {
                     _device.Dispose();
                     _device = null;
-                    return false;
+                    return MapNativeError(nRet);
                 }
 
-                // 探测网络最佳包大小 (如果是 GigE 相机)
+                // GigE 优化
                 if (_device is IGigEDevice gigEDevice)
                 {
                     gigEDevice.GetOptimalPacketSize(out int packetSize);
                     _device.Parameters.SetIntValue("GevSCPSPacketSize", packetSize);
                 }
 
-                // 默认设置为连续采图模式
                 _device.Parameters.SetEnumValueByString("AcquisitionMode", "Continuous");
                 _device.Parameters.SetEnumValueByString("TriggerMode", "Off");
 
-                return true;
+                return MvsStatus.Ok;
             }
             catch
             {
-                return false;
+                return MvsStatus.AcquireFailed;
             }
         }
 
-        public bool StartGrabbing()
+        public MvsStatus StartGrabbing()
         {
-            if (_device == null || _isGrabbing) return false;
+            if (_device == null) return MvsStatus.NotConnected;
+            if (_isGrabbing) return MvsStatus.Ok;
 
             int nRet = _device.StreamGrabber.StartGrabbing();
-            if (nRet != MvError.MV_OK) return false;
+            if (nRet != MvError.MV_OK) return MapNativeError(nRet);
 
             _isGrabbing = true;
-
-            // 开启后台独立线程取图（完全照搬你提供的官方 Demo 逻辑）
             _grabThread = new Thread(ReceiveThreadProcess)
             {
-                IsBackground = true // 设为后台线程，主程序退出时自动销毁
+                IsBackground = true
             };
             _grabThread.Start();
 
-            return true;
+            return MvsStatus.Ok;
         }
 
-        public bool StopGrabbing()
+        public MvsStatus StopGrabbing()
         {
-            if (_device == null || !_isGrabbing) return false;
+            if (_device == null) return MvsStatus.NotConnected;
+            if (!_isGrabbing) return MvsStatus.Ok;
 
-            _isGrabbing = false; // 1. 改变标志位，后台 while 循环会退出
-
-            // 2. 等待线程结束（最多等1秒），防止程序关闭时线程还在访问已释放的资源
+            _isGrabbing = false;
             if (_grabThread != null && _grabThread.IsAlive)
             {
                 _grabThread.Join(1000);
             }
 
             int nRet = _device.StreamGrabber.StopGrabbing();
-            return nRet == MvError.MV_OK;
+            return nRet == MvError.MV_OK ? MvsStatus.Ok : MvsStatus.StopGrabError;
         }
 
         public void Close()
         {
-            if (_isGrabbing)
-            {
-                StopGrabbing();
-            }
+            if (_isGrabbing) StopGrabbing();
 
             if (_device != null)
             {
-                // 3. 彻底释放底层句柄
                 _device.Close();
                 _device.Dispose();
                 _device = null;
             }
         }
 
-
-        // 取图后台线程
         private void ReceiveThreadProcess()
         {
             while (_isGrabbing)
             {
-                // 设置 1000ms 超时获取一帧图像
                 int nRet = _device.StreamGrabber.GetImageBuffer(1000, out IFrameOut frameOut);
 
                 if (nRet == MvError.MV_OK && frameOut != null)
                 {
                     try
                     {
-                        // 将海康底层的图像数据转换为标准的 C# Bitmap
-                        // 注意：ToBitmap() 是内部深拷贝，转换完之后底层 Buffer 就可以释放了
                         Bitmap bitmap = frameOut.Image.ToBitmap();
-
                         if (bitmap != null)
                         {
-                            bitmap.Save(@"D:\123test_frame.bmp");
-                            // 触发事件，将图像甩给主 UI 层
                             ImageGrabbed?.Invoke(this, bitmap);
                         }
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[HikCamera] 图像转换失败: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"[HikCamera] Image convert error: {ex.Message}");
                     }
                     finally
                     {
-                        // 【极其重要】：用完必须释放底层 Buffer，否则会导致相机内存爆满卡死！
                         _device.StreamGrabber.FreeImageBuffer(frameOut);
                     }
                 }
                 else
                 {
-                    // 没取到图（可能是触发模式没给信号），稍微歇一下防止 CPU 占用 100%
                     Thread.Sleep(5);
                 }
+            }
+        }
+
+        // ================= 参数设置实现 (返回 MvsStatus) =================
+
+        public MvsStatus GetFloatValue(string key, out float value)
+        {
+            value = 0f;
+            if (_device == null) return MvsStatus.NotConnected;
+            int nRet = _device.Parameters.GetFloatValue(key, out var stParam);
+            if (nRet == MvError.MV_OK) value = stParam.CurValue;
+            return MapNativeError(nRet);
+        }
+
+        public MvsStatus SetFloatValue(string key, float value)
+        {
+            if (_device == null) return MvsStatus.NotConnected;
+            return MapNativeError(_device.Parameters.SetFloatValue(key, value));
+        }
+
+        public MvsStatus GetIntValue(string key, out long value)
+        {
+            value = 0;
+            if (_device == null) return MvsStatus.NotConnected;
+            int nRet = _device.Parameters.GetIntValue(key, out var stParam);
+            if (nRet == MvError.MV_OK) value = stParam.CurValue;
+            return MapNativeError(nRet);
+        }
+
+        public MvsStatus SetIntValue(string key, long value)
+        {
+            if (_device == null) return MvsStatus.NotConnected;
+            return MapNativeError(_device.Parameters.SetIntValue(key, value));
+        }
+
+        public MvsStatus GetBoolValue(string key, out bool value)
+        {
+            value = false;
+            if (_device == null) return MvsStatus.NotConnected;
+            return MapNativeError(_device.Parameters.GetBoolValue(key, out value));
+        }
+
+        public MvsStatus SetBoolValue(string key, bool value)
+        {
+            if (_device == null) return MvsStatus.NotConnected;
+            return MapNativeError(_device.Parameters.SetBoolValue(key, value));
+        }
+
+        public MvsStatus GetEnumValue(string key, out uint value)
+        {
+            value = 0;
+            //if (_device == null) return MvsStatus.NotConnected;
+
+            //// 海康 SDK 返回 IEnumValue 接口
+            //int nRet = _device.Parameters.GetEnumValue(key, out IEnumValue stParam);
+            //if (nRet == MvError.MV_OK)
+            //{
+            //    // 修正点：使用 .CurValue
+            //    value = (uint)stParam.CurValue;
+            //    return MvsStatus.Ok;
+            //}
+            return MvsStatus.ReadParamFailed;
+        }
+        public MvsStatus GetEnumSymbolic(string key, out string symbolic)
+        {
+            symbolic = "";
+            if (_device == null) return MvsStatus.NotConnected;
+
+            int nRet = _device.Parameters.GetEnumValue(key, out IEnumValue stParam);
+            if (nRet == MvError.MV_OK)
+            {
+                // 获取当前选中的枚举项的符号名（如 "On", "Off"）
+                symbolic = stParam.CurEnumEntry.Symbolic;
+                return MvsStatus.Ok;
+            }
+            return MapNativeError(nRet);
+        }
+        public MvsStatus SetEnumValueByString(string key, string value)
+        {
+            if (_device == null) return MvsStatus.NotConnected;
+            // 直接调用海康的字符串设置接口
+            int nRet = _device.Parameters.SetEnumValueByString(key, value);
+            return MapNativeError(nRet);
+        }
+        public MvsStatus SetEnumValue(string key, uint value)
+        {
+            if (_device == null) return MvsStatus.NotConnected;
+            return MapNativeError(_device.Parameters.SetEnumValue(key, value));
+        }
+
+        private MvsStatus MapNativeError(int nRet)
+        {
+            if (nRet == MvError.MV_OK) return MvsStatus.Ok;
+
+            switch (nRet)
+            {
+                case MvError.MV_E_HANDLE: return MvsStatus.InvalidHandle;
+                case MvError.MV_E_GC_ACCESS: return MvsStatus.DeviceUnaccessible;
+                case MvError.MV_E_PARAMETER: return MvsStatus.InvalidInput;
+                case MvError.MV_E_NODATA: return MvsStatus.GetImageTimeout;
+                default:
+                    // 如果是写入操作失败通常返回此
+                    return MvsStatus.WriteParamFailed;
             }
         }
     }

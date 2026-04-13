@@ -3,3 +3,4 @@ D:\Repositories\MVS_WPF\01_Contract\MVS.Contract\bin\Debug\MVS.Contract.pdb
 D:\Repositories\MVS_WPF\01_Contract\MVS.Contract\obj\Debug\MVS.Contract.csproj.CoreCompileInputs.cache
 D:\Repositories\MVS_WPF\01_Contract\MVS.Contract\obj\Debug\MVS.Contract.dll
 D:\Repositories\MVS_WPF\01_Contract\MVS.Contract\obj\Debug\MVS.Contract.pdb
+D:\Repositories\MVS_WPF\01_Contract\MVS.Contract\obj\Debug\MVS.Contract.csproj.AssemblyReference.cache
