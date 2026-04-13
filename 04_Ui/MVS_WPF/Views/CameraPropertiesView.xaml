@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="MVS_WPF.Views.CameraPropertiesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vms="clr-namespace:MVS_WPF.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="300"
+             Background="#252526">
+
+    <UserControl.DataContext>
+        <vms:CameraPropertiesViewModel />
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="LightGray"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5,0"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#555555"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="3,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#2D2D30" BorderBrush="#3F3F46" BorderThickness="0,0,0,1">
+            <TextBlock Text="相机参数设置" FontWeight="Bold" HorizontalAlignment="Center"/>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+
+                <GroupBox Header="曝光控制" Foreground="Gray" Margin="0,5">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="自动曝光:"/>
+                        <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"
+                                  IsChecked="{Binding IsAutoExposure, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="1" Text="曝光时间(us):"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" 
+                                 Text="{Binding ExposureTime, UpdateSourceTrigger=LostFocus}"/>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="模拟控制" Foreground="Gray" Margin="0,5">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="增益(dB):"/>
+                        <TextBox Grid.Column="1" Text="{Binding Gain, UpdateSourceTrigger=LostFocus}"/>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="图像尺寸" Foreground="Gray" Margin="0,5">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="宽度:"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Width, UpdateSourceTrigger=LostFocus}"/>
+
+                        <TextBlock Grid.Row="1" Text="高度:"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Height, UpdateSourceTrigger=LostFocus}"/>
+                    </Grid>
+                </GroupBox>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
