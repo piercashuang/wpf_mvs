@@ -5,7 +5,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MVS.Infrastructure;
-using MVS_WPF.Views; // 引入侧边栏的命名空间
+using MVS_WPF.Views;         // 存放 CameraPropertiesView 的地方
+using MVS_WPF.ViewModels;    // 存放 CameraPropertiesViewModel 和 SidebarViewModel 的地方
 
 namespace MVS_WPF
 {
@@ -20,12 +21,13 @@ namespace MVS_WPF
             // 核心新增：用代码动态生成下半部分的 UI 和绑定
             SetupMainContentUI();
         }
-
         private void SetupMainContentUI()
         {
-            // 1. 设置列定义 (左侧 300，右侧自适应)
+            // ================= 1. 设置列定义 (左边300，中间自适应，右边300) =================
+            ContentContainer.ColumnDefinitions.Clear();
             ContentContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(300) });
             ContentContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            ContentContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(300) });
 
             // ================= 2. 构建左侧侧边栏 =================
             Border sidebarBorder = new Border
@@ -34,49 +36,55 @@ namespace MVS_WPF
                 BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3F3F46")),
                 BorderThickness = new Thickness(0, 0, 1, 0)
             };
-
-            // 实例化侧边栏
             SidebarView sidebar = new SidebarView();
             sidebarBorder.Child = sidebar;
             Grid.SetColumn(sidebarBorder, 0);
 
-            // ================= 3. 构建右侧主画面区域 =================
-            Grid rightGrid = new Grid
-            {
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E1E1E"))
-            };
+            // ================= 3. 构建中间主画面区域 =================
+            Grid centerGrid = new Grid { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E1E1E")) };
+            Image cameraDisplay = new Image { Stretch = Stretch.Uniform, Margin = new Thickness(10) };
 
-            TextBlock placeholderText = new TextBlock
-            {
-                Text = "主画面显示区域",
-                Foreground = Brushes.Gray,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 30
-            };
-
-            Image cameraDisplay = new Image
-            {
-                Stretch = Stretch.Uniform,
-                Margin = new Thickness(10)
-            };
-
-            // 【最核心的绑定代码】：相当于 XAML 里的 Source="{Binding DataContext.DisplayImage, ElementName=SidebarCtrl}"
-            Binding imageBinding = new Binding("DataContext.DisplayImage")
-            {
-                // 直接将绑定的源头指向我们上面刚 new 出来的 sidebar 对象
-                Source = sidebar
-            };
+            // 绑定画面
+            Binding imageBinding = new Binding("DataContext.DisplayImage") { Source = sidebar };
             cameraDisplay.SetBinding(Image.SourceProperty, imageBinding);
+            centerGrid.Children.Add(cameraDisplay);
+            Grid.SetColumn(centerGrid, 1);
 
-            // 组装右侧
-            rightGrid.Children.Add(placeholderText);
-            rightGrid.Children.Add(cameraDisplay);
-            Grid.SetColumn(rightGrid, 1);
+            // ================= 4. 构建右侧属性面板 =================
+            Border propertiesBorder = new Border
+            {
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#252526")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3F3F46")),
+                BorderThickness = new Thickness(1, 0, 0, 0)
+            };
+            CameraPropertiesView propertiesView = new CameraPropertiesView();
+            propertiesBorder.Child = propertiesView;
+            Grid.SetColumn(propertiesBorder, 2);
 
-            // ================= 4. 将左右两部分塞进主容器 =================
+            // ================= 5. 【核心逻辑】：建立左右通讯 =================
+            // 获取两个 ViewModel
+            var sidebarVM = sidebar.DataContext as SidebarViewModel;
+            var propVM = propertiesView.DataContext as CameraPropertiesViewModel;
+
+            if (sidebarVM != null && propVM != null)
+            {
+                // 订阅侧边栏 ViewModel 的属性变化
+                sidebarVM.PropertyChanged += (s, e) =>
+                {
+                    // 假设你在 SidebarViewModel 里增加了一个名为 ConnectedCameraSn 的属性
+                    // 或者我们利用连接成功的时机
+                    if (e.PropertyName == "ConnectedCameraSn" && !string.IsNullOrEmpty(sidebarVM.ConnectedCameraSn))
+                    {
+                        // 当左侧连接成功，通知右侧回读参数
+                        propVM.LoadParametersFromCamera(sidebarVM.ConnectedCameraSn);
+                    }
+                };
+            }
+
+            // ================= 6. 塞入容器 =================
             ContentContainer.Children.Add(sidebarBorder);
-            ContentContainer.Children.Add(rightGrid);
+            ContentContainer.Children.Add(centerGrid);
+            ContentContainer.Children.Add(propertiesBorder);
         }
 
         private void LoadCameraPlugins()

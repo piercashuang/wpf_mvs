@@ -26,6 +26,13 @@ namespace MVS_WPF.ViewModels
             }
         }
 
+        private string _connectedCameraSn;
+        public string ConnectedCameraSn
+        {
+            get => _connectedCameraSn;
+            set { _connectedCameraSn = value; OnPropertyChanged(); }
+        }
+
         private ICamera _connectedCamera = null;
 
         private BitmapImage _displayImage;
@@ -107,23 +114,15 @@ namespace MVS_WPF.ViewModels
             {
                 // 2. 尝试打开相机，并接收返回的状态对象
                 MVS.Contract.MvsStatus openStatus = _connectedCamera.Open();
-
-                // 【核心修改】：使用 .IsOk 进行判断
                 if (openStatus.IsOk)
                 {
                     _connectedCamera.ImageGrabbed += OnCameraImageGrabbed;
+                    _connectedCamera.StartGrabbing();
 
-                    // 3. 尝试取流
-                    var grabStatus = _connectedCamera.StartGrabbing();
-                    if (grabStatus.IsOk)
-                    {
-                        MessageBox.Show($"相机 {cameraSn} 连接并取流成功！", "成功", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        // 取流失败，显示具体错误信息
-                        MessageBox.Show($"取流失败: {grabStatus.MessageCn}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    // 【关键】：赋值 SN，触发 MainWindow 里的监听，从而让右侧刷新
+                    this.ConnectedCameraSn = cameraSn;
+
+                    MessageBox.Show($"相机 {cameraSn} 连接成功！");
                 }
                 else
                 {
