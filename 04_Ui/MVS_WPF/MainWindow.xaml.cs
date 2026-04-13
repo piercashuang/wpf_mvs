@@ -197,6 +197,21 @@ namespace MVS_WPF
                 BtnMaximize.ToolTip = "最大化";
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            // 1. 取消事件订阅，防止在关闭过程中 UI 还在尝试刷新
+            if (_testCamera != null)
+            {
+                _testCamera.ImageGrabbed -= OnCameraImageGrabbed;
+            }
+
+            // 2. 调用 Manager 释放所有相机资源
+            CameraManager.Instance.CloseAllCameras();
+
+            // 3. 强制结束当前进程（可选，确保所有后台线程彻底消失）
+            // Environment.Exit(0); 
+        }
     }
 
 

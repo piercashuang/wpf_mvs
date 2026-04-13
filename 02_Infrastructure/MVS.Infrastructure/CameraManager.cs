@@ -116,6 +116,26 @@ namespace MVS.Infrastructure
             return _discoveredCameras.Values.Select(d => d.MetaInfo);
         }
 
+        public void CloseAllCameras()
+        {
+            // 遍历所有正在使用的相机
+            foreach (var sn in _activeCameras.Keys.ToList())
+            {
+                if (_activeCameras.TryRemove(sn, out var camera))
+                {
+                    try
+                    {
+                        camera.Close();
+                        System.Diagnostics.Debug.WriteLine($"[Manager] 已成功释放相机: {sn}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[Manager] 释放相机 {sn} 时出错: {ex.Message}");
+                    }
+                }
+            }
+        }
+
         public ICamera CreateAndConnectCamera(string sn)
         {
             if (_activeCameras.TryGetValue(sn, out var activeCamera))

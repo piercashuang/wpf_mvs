@@ -82,21 +82,6 @@ namespace MVS.Camera.Hik
             }
         }
 
-        public void Close()
-        {
-            if (_isGrabbing)
-            {
-                StopGrabbing();
-            }
-
-            if (_device != null)
-            {
-                _device.Close();
-                _device.Dispose();
-                _device = null;
-            }
-        }
-
         public bool StartGrabbing()
         {
             if (_device == null || _isGrabbing) return false;
@@ -120,12 +105,34 @@ namespace MVS.Camera.Hik
         {
             if (_device == null || !_isGrabbing) return false;
 
-            _isGrabbing = false;
-            _grabThread?.Join(1000); // 等待线程安全退出
+            _isGrabbing = false; // 1. 改变标志位，后台 while 循环会退出
+
+            // 2. 等待线程结束（最多等1秒），防止程序关闭时线程还在访问已释放的资源
+            if (_grabThread != null && _grabThread.IsAlive)
+            {
+                _grabThread.Join(1000);
+            }
 
             int nRet = _device.StreamGrabber.StopGrabbing();
             return nRet == MvError.MV_OK;
         }
+
+        public void Close()
+        {
+            if (_isGrabbing)
+            {
+                StopGrabbing();
+            }
+
+            if (_device != null)
+            {
+                // 3. 彻底释放底层句柄
+                _device.Close();
+                _device.Dispose();
+                _device = null;
+            }
+        }
+
 
         // 取图后台线程
         private void ReceiveThreadProcess()
