@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CameraConfig Brand="Hikvision">
+  <input>
+    
+    <param typeId="5" name="DeviceUserID" text="设备自定义名称" />
+
+    <param typeId="2" name="ExposureTime" text="曝光时间(us)">
+      <min>20</min>
+      <max>100000</max>
+    </param>
+
+    <param typeId="2" name="Gain" text="增益(dB)">
+      <min>0</min>
+      <max>24</max>
+    </param>
+
+  </input>
+</CameraConfig>

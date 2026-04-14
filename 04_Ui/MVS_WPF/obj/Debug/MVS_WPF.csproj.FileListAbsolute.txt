@@ -26,3 +26,4 @@ D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\Views\SidebarView.baml
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\GeneratedInternalTypeHelper.g.cs
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\Views\CameraPropertiesView.g.cs
 D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\obj\Debug\Views\CameraPropertiesView.baml
+D:\Repositories\MVS_WPF\04_Ui\MVS_WPF\bin\Debug\DynamicViews\CameraConfigs\Hikvision.xml
