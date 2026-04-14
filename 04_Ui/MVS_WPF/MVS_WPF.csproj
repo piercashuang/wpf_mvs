@@ -60,8 +60,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DynamicViews\Builders\FloatControlBuilder.cs" />
+    <Compile Include="DynamicViews\Builders\StringControlBuilder.cs" />
+    <Compile Include="DynamicViews\ControlBase.cs" />
+    <Compile Include="DynamicViews\ControlContext.cs" />
+    <Compile Include="DynamicViews\ControlFactory.cs" />
     <Compile Include="ViewModels\CameraPropertiesViewModel.cs" />
     <Compile Include="ViewModels\SidebarViewModel.cs" />
+    <Compile Include="Views\CameraPropertiesView.xaml.cs">
+      <DependentUpon>CameraPropertiesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SidebarView.xaml.cs">
       <DependentUpon>SidebarView.xaml</DependentUpon>
     </Compile>
@@ -77,6 +85,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\CameraPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SidebarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -127,6 +139,11 @@
       <Project>{224a70ed-f3ab-4d2a-98ca-2bc08155b007}</Project>
       <Name>MVS.Camera.Hik</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DynamicViews\CameraConfigs\Hikvision.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

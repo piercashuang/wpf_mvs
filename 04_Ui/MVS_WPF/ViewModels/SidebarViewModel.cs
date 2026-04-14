@@ -145,7 +145,13 @@ namespace MVS_WPF.ViewModels
                 _connectedCamera.Close();
                 _connectedCamera = null;
 
+                // 👇============= 确保这两行存在 =============👇
+                // 清空图像显示区
                 DisplayImage = null;
+                // 清空连接的 SN (这会通知右侧面板自己被断开了)
+                ConnectedCameraSn = null;
+                // 👆==========================================👆
+
                 System.Diagnostics.Debug.WriteLine("[Sidebar] 相机已断开");
             }
         }

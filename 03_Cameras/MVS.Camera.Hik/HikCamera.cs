@@ -131,16 +131,27 @@ namespace MVS.Camera.Hik
         {
             while (_isGrabbing)
             {
+                // 1. 防御性检查：防止主线程调用 Close() 后 _device 变为空引发异常
+                if (_device == null || _device.StreamGrabber == null)
+                {
+                    break;
+                }
+
                 int nRet = _device.StreamGrabber.GetImageBuffer(1000, out IFrameOut frameOut);
 
                 if (nRet == MvError.MV_OK && frameOut != null)
                 {
                     try
                     {
-                        Bitmap bitmap = frameOut.Image.ToBitmap();
-                        if (bitmap != null)
+                        // 2. 【核心修复】：必须检查 frameOut.Image 是否为空！
+                        // 海康SDK在网络丢包或残帧时，Image 属性可能为 null
+                        if (frameOut.Image != null)
                         {
-                            ImageGrabbed?.Invoke(this, bitmap);
+                            Bitmap bitmap = frameOut.Image.ToBitmap();
+                            if (bitmap != null)
+                            {
+                                ImageGrabbed?.Invoke(this, bitmap);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -149,7 +160,11 @@ namespace MVS.Camera.Hik
                     }
                     finally
                     {
-                        _device.StreamGrabber.FreeImageBuffer(frameOut);
+                        // 3. 再次确保底层没被释放，才去释放图像缓存
+                        if (_device != null && _device.StreamGrabber != null)
+                        {
+                            _device.StreamGrabber.FreeImageBuffer(frameOut);
+                        }
                     }
                 }
                 else

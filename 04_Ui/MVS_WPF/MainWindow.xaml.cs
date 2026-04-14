@@ -20,10 +20,20 @@ namespace MVS_WPF
 
             // 核心新增：用代码动态生成下半部分的 UI 和绑定
             SetupMainContentUI();
+
+            var sidebarBorder = ContentContainer.Children[0] as Border;
+            var sidebarView = sidebarBorder?.Child as SidebarView;
+            var sidebarVM = sidebarView?.DataContext as SidebarViewModel;
+
+            if (sidebarVM != null && sidebarVM.ScanCamerasCommand.CanExecute(null))
+            {
+                // 模拟用户点击“扫描”按钮
+                sidebarVM.ScanCamerasCommand.Execute(null);
+            }
         }
         private void SetupMainContentUI()
         {
-            // ================= 1. 设置列定义 (左边300，中间自适应，右边300) =================
+            // ================= 1. 设置列定义 =================
             ContentContainer.ColumnDefinitions.Clear();
             ContentContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(300) });
             ContentContainer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -42,9 +52,21 @@ namespace MVS_WPF
 
             // ================= 3. 构建中间主画面区域 =================
             Grid centerGrid = new Grid { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E1E1E")) };
-            Image cameraDisplay = new Image { Stretch = Stretch.Uniform, Margin = new Thickness(10) };
 
-            // 绑定画面
+            // 👇====== 新增：无信号时的提示文字 ======👇
+            TextBlock noSignalText = new TextBlock
+            {
+                Text = "NO CAMERA CONNECTED",
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#555555")),
+                FontSize = 24,
+                FontWeight = FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            centerGrid.Children.Add(noSignalText);
+            // 👆====================================👆
+
+            Image cameraDisplay = new Image { Stretch = Stretch.Uniform, Margin = new Thickness(10) };
             Binding imageBinding = new Binding("DataContext.DisplayImage") { Source = sidebar };
             cameraDisplay.SetBinding(Image.SourceProperty, imageBinding);
             centerGrid.Children.Add(cameraDisplay);
@@ -58,25 +80,45 @@ namespace MVS_WPF
                 BorderThickness = new Thickness(1, 0, 0, 0)
             };
             CameraPropertiesView propertiesView = new CameraPropertiesView();
+            propertiesView.DataContext = new CameraPropertiesViewModel();
             propertiesBorder.Child = propertiesView;
             Grid.SetColumn(propertiesBorder, 2);
 
             // ================= 5. 【核心逻辑】：建立左右通讯 =================
-            // 获取两个 ViewModel
             var sidebarVM = sidebar.DataContext as SidebarViewModel;
             var propVM = propertiesView.DataContext as CameraPropertiesViewModel;
 
             if (sidebarVM != null && propVM != null)
             {
-                // 订阅侧边栏 ViewModel 的属性变化
                 sidebarVM.PropertyChanged += (s, e) =>
                 {
-                    // 假设你在 SidebarViewModel 里增加了一个名为 ConnectedCameraSn 的属性
-                    // 或者我们利用连接成功的时机
-                    if (e.PropertyName == "ConnectedCameraSn" && !string.IsNullOrEmpty(sidebarVM.ConnectedCameraSn))
+                    if (e.PropertyName == "ConnectedCameraSn")
                     {
-                        // 当左侧连接成功，通知右侧回读参数
-                        propVM.LoadParametersFromCamera(sidebarVM.ConnectedCameraSn);
+                        if (!string.IsNullOrEmpty(sidebarVM.ConnectedCameraSn))
+                        {
+                            // 【连接成功】
+                            propertiesView.LoadCameraConfig("Hikvision", propVM);
+                            propVM.LoadParametersFromCamera(sidebarVM.ConnectedCameraSn);
+
+                            // 隐藏“无信号”提示文字
+                            noSignalText.Visibility = Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            // 【断开连接】
+                            // 1. 清空右侧参数面板
+                            propertiesView.LoadCameraConfig("", propVM);
+
+                            // 2. 显示“无信号”提示文字
+                            noSignalText.Visibility = Visibility.Visible;
+
+                            // 3. (可选防线) 强制清理可能残留在 centerGrid 中的 ROI 绘制框或十字线
+                            // 注意：索引 0 是 noSignalText，索引 1 是 cameraDisplay，不能删这两个！
+                            while (centerGrid.Children.Count > 2)
+                            {
+                                centerGrid.Children.RemoveAt(centerGrid.Children.Count - 1);
+                            }
+                        }
                     }
                 };
             }
