@@ -9,10 +9,15 @@ using MvCameraControl; // 【关键引入】：Manager 现在直接依赖海康 
 
 namespace MVS.Infrastructure
 {
-    public sealed class CameraManager
+    public sealed class CameraManager : SingletonBase<CameraManager>
     {
-        private static readonly CameraManager _instance = new CameraManager();
-        public static CameraManager Instance => _instance;
+        // 1. 私有构造函数：负责所有内部容器的初始化
+        private CameraManager()
+        {
+            _discoveredCameras = new ConcurrentDictionary<string, CameraDescriptor>();
+            _activeCameras = new ConcurrentDictionary<string, ICamera>();
+            _factories = new List<ICameraFactory>();
+        }
 
         private class CameraDescriptor
         {
@@ -20,11 +25,11 @@ namespace MVS.Infrastructure
             public CameraMetaInfo MetaInfo { get; set; }
         }
 
-        private readonly ConcurrentDictionary<string, CameraDescriptor> _discoveredCameras = new ConcurrentDictionary<string, CameraDescriptor>();
-        private readonly ConcurrentDictionary<string, ICamera> _activeCameras = new ConcurrentDictionary<string, ICamera>();
-        private readonly List<ICameraFactory> _factories = new List<ICameraFactory>();
+        // 2. 字段声明：这里不需要再 new 了，交给构造函数即可
 
-        private CameraManager() { }
+        private readonly ConcurrentDictionary<string, CameraDescriptor> _discoveredCameras;
+        private readonly ConcurrentDictionary<string, ICamera> _activeCameras;
+        private readonly List<ICameraFactory> _factories;
 
         public void InitializePlugins(string pluginDir)
         {
