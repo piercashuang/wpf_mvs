@@ -126,16 +126,11 @@ namespace MVS.Camera.Hik
                 _device = null;
             }
         }
-
         private void ReceiveThreadProcess()
         {
             while (_isGrabbing)
             {
-                // 1. 防御性检查：防止主线程调用 Close() 后 _device 变为空引发异常
-                if (_device == null || _device.StreamGrabber == null)
-                {
-                    break;
-                }
+                if (_device == null || _device.StreamGrabber == null) break;
 
                 int nRet = _device.StreamGrabber.GetImageBuffer(1000, out IFrameOut frameOut);
 
@@ -143,24 +138,33 @@ namespace MVS.Camera.Hik
                 {
                     try
                     {
-                        // 2. 【核心修复】：必须检查 frameOut.Image 是否为空！
-                        // 海康SDK在网络丢包或残帧时，Image 属性可能为 null
-                        if (frameOut.Image != null)
+                        // ==========================================================
+                        // 【核心修复】：根据 LostPacket 过滤花屏图像
+                        // 如果 LostPacket 为 0，说明这一帧数据是完整的
+                        // ==========================================================
+                        if (frameOut.LostPacket == 0)
                         {
-                            Bitmap bitmap = frameOut.Image.ToBitmap();
-                            if (bitmap != null)
+                            if (frameOut.Image != null)
                             {
-                                ImageGrabbed?.Invoke(this, bitmap);
+                                Bitmap bitmap = frameOut.Image.ToBitmap();
+                                if (bitmap != null)
+                                {
+                                    ImageGrabbed?.Invoke(this, bitmap);
+                                }
                             }
+                        }
+                        else
+                        {
+                            // 记录一下具体丢了多少包，方便你排查网线质量
+                            System.Diagnostics.Debug.WriteLine($"[HikCamera] 丢包警告: 帧号 {frameOut.FrameNum} 丢了 {frameOut.LostPacket} 个包，已丢弃该帧。");
                         }
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[HikCamera] Image convert error: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"[HikCamera] 渲染异常: {ex.Message}");
                     }
                     finally
                     {
-                        // 3. 再次确保底层没被释放，才去释放图像缓存
                         if (_device != null && _device.StreamGrabber != null)
                         {
                             _device.StreamGrabber.FreeImageBuffer(frameOut);
@@ -169,7 +173,7 @@ namespace MVS.Camera.Hik
                 }
                 else
                 {
-                    Thread.Sleep(5);
+                    Thread.Sleep(2);
                 }
             }
         }
